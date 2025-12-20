@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=transaction_db
+    ports:
+      - "5432:5432"
+    networks:
+      - transaction-net
+    volumes:
+      - ../data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+#  charge-manager:
+#    image: charge-manager:latest
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transaction_db
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - transaction-net
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: on-failure
+#
+#  charge-proxy:
+#    image: charge-proxy:latest
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - transaction-net
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: on-failure
+
+networks:
+  transaction-net:
+    driver: overlay
+
+#volumes:
+#  pgdata:
