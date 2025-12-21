@@ -1,5 +1,6 @@
 package service;
 
+import model.Cliente;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.ClienteRepository;
@@ -13,7 +14,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void salvarCliente(String nome, String email, String telefone) {
-        clienteRepository.salvarCliente(nome, email, telefone);
+    public void salvarCliente(Cliente cliente) {
+        clienteRepository.salvarCliente(cliente);
     }
 }
