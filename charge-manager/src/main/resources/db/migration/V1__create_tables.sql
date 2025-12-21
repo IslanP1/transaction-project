@@ -20,6 +20,17 @@ INSERT INTO tb_charge_status (code, description) VALUES
     ('PAID', 'Cobrança paga'),
     ('CANCELED', 'Cobrança cancelada');
 
+CREATE TABLE tb_charge_payment_method (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(30) NOT NULL UNIQUE, -- PIX, BOLETO, CARTAO_CREDITO...
+    description VARCHAR(255) NOT NULL
+);
+
+INSERT INTO tb_charge_payment_method (code, description) VALUES
+    ('PIX', 'Pagamento via PIX'),
+    ('BOLETO', 'Pagamento via Boleto Bancário'),
+    ('CARTAO_CREDITO', 'Pagamento via Cartão de Crédito');
+
 -- Tabela de Cobranças (Charge)
 -- Status baseados no requisito [f4]: PENDING, REGISTERED, CANCELED, PAID
 CREATE TABLE tb_charge (
@@ -28,8 +39,9 @@ CREATE TABLE tb_charge (
     amount DECIMAL(10, 2) NOT NULL,
     due_date DATE NOT NULL,
     status_id INTEGER NOT NULL SET DEFAULT 1, -- Referência para tb_charge_status [f4]
-    payment_method VARCHAR(20), -- PIX, BOLETO, CARTAO_CREDITO [f3]
+    payment_method_id INTEGER NOT NULL, -- PIX, BOLETO, CARTAO_CREDITO [f3]
     client_id INTEGER NOT NULL,
     CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES tb_client(id) ON DELETE RESTRICT,
     CONSTRAINT fk_charge_status FOREIGN KEY (status_id) REFERENCES tb_charge_status(id) ON DELETE RESTRICT
+    CONSTRAINT fk_payment_method FOREIGN KEY (payment_method_id) REFERENCES tb_charge_payment_method(id) ON DELETE RESTRICT
 );
