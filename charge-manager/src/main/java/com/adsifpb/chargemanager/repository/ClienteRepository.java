@@ -1,6 +1,6 @@
-package repository;
+package com.adsifpb.chargemanager.repository;
 
-import model.Cliente;
+import com.adsifpb.chargemanager.model.Cliente;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
