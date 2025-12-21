@@ -2,8 +2,8 @@ package com.adsifpb.chargemanager.service;
 
 import com.adsifpb.chargemanager.model.Cobranca;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.adsifpb.chargemanager.repository.CobrancaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CobrancaService {
@@ -14,7 +14,7 @@ public class CobrancaService {
     }
 
     @Transactional
-    public void emitirCobranca(Cobranca cobranca) {
-        cobrancaRepository.salvarCobranca(cobranca);
+    public Cobranca salvar(Cobranca cobranca) {
+        return cobrancaRepository.save(cobranca);
     }
 }
