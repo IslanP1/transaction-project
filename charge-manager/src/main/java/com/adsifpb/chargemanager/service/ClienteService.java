@@ -15,6 +15,6 @@ public class ClienteService {
 
     @Transactional
     public void salvarCliente(Cliente cliente) {
-        clienteRepository.salvarCliente(cliente);
+        clienteRepository.salvar(cliente);
     }
 }

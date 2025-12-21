@@ -1,0 +1,33 @@
+package com.adsifpb.chargemanager.repository;
+
+import com.adsifpb.chargemanager.model.Cliente;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ClienteSalvarRepositoryJdbc implements ClienteRepository {
+
+    private JdbcTemplate jdbcTemplate;
+
+    public ClienteSalvarRepositoryJdbc(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Cliente salvar(Cliente cliente) {
+        String sql = """
+            INSERT INTO tb_client
+            (name, email, phone)
+            VALUES (?, ?, ?)
+        """;
+
+        jdbcTemplate.update(
+                sql,
+                cliente.getNome(),
+                cliente.getEmail(),
+                cliente.getTelefone()
+        );
+
+        return cliente;
+    }
+}
