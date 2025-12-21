@@ -14,7 +14,7 @@ public class CobrancaService {
     }
 
     @Transactional
-    public Cobranca salvar(Cobranca cobranca) {
-        return cobrancaRepository.save(cobranca);
+    public Cobranca efetuar(Cobranca cobranca) {
+        return cobrancaRepository.efetuar(cobranca);
     }
 }

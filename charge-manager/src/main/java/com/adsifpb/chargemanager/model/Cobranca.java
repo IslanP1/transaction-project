@@ -1,54 +1,33 @@
 package com.adsifpb.chargemanager.model;
-import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "tb_charge")
 public class Cobranca {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "description", nullable = false)
     private String descricao;
-
-    @Column(name = "amount", nullable = false)
     private Double quantia;
-
-    @Column(name = "due_date", nullable = false)
     private LocalDate dataVencimento;
+    private Integer statusId;
+    private Integer metodoPagamentoId;
+    private Integer clienteId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id", nullable = false)
-    private StatusCobranca statusCobranca;
+    public Cobranca() {}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_method_id", nullable = false)
-    private MetodoPagamento metodoPagamento;
-
-    public Cobranca() {
-    }
-
-    public Cobranca(
-            String descricao,
-            Double quantia,
-            LocalDate dataVencimento,
-            StatusCobranca status,
-            MetodoPagamento metodoPagamento
-    ) {
+    public Cobranca(String descricao, Double quantia, LocalDate dataVencimento,
+                    Integer statusId, Integer metodoPagamentoId) {
         this.descricao = descricao;
         this.quantia = quantia;
         this.dataVencimento = dataVencimento;
-        this.statusCobranca = status;
-        this.metodoPagamento = metodoPagamento;
+        this.statusId = statusId;
+        this.metodoPagamentoId = metodoPagamentoId;
+        this.clienteId = clienteId;
     }
 
-    public Long getId() {
-        return id;
+    public Integer getClienteId() {
+        return clienteId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setClienteId(Integer clienteId) {
+        this.clienteId = clienteId;
     }
 
     public String getDescricao() {
@@ -59,14 +38,6 @@ public class Cobranca {
         this.descricao = descricao;
     }
 
-    public LocalDate getDataVencimento() {
-        return dataVencimento;
-    }
-
-    public void setDataVencimento(LocalDate dataVencimento) {
-        this.dataVencimento = dataVencimento;
-    }
-
     public Double getQuantia() {
         return quantia;
     }
@@ -75,19 +46,27 @@ public class Cobranca {
         this.quantia = quantia;
     }
 
-    public StatusCobranca getStatus() {
-        return statusCobranca;
+    public LocalDate getDataVencimento() {
+        return dataVencimento;
     }
 
-    public void setStatus(StatusCobranca status) {
-        this.statusCobranca = status;
+    public void setDataVencimento(LocalDate dataVencimento) {
+        this.dataVencimento = dataVencimento;
     }
 
-    public MetodoPagamento getMetodoPagamento() {
-        return metodoPagamento;
+    public Integer getStatusId() {
+        return statusId;
     }
 
-    public void setMetodoPagamento(MetodoPagamento metodoPagamento) {
-        this.metodoPagamento = metodoPagamento;
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
+    }
+
+    public Integer getMetodoPagamentoId() {
+        return metodoPagamentoId;
+    }
+
+    public void setMetodoPagamentoId(Integer metodoPagamentoId) {
+        this.metodoPagamentoId = metodoPagamentoId;
     }
 }
