@@ -9,7 +9,7 @@ public class Cobranca {
     private Integer statusId;
     private Integer metodoPagamentoId;
     private Integer clienteId;
-
+    
     public Cobranca() {}
 
     public Cobranca(String descricao, Double quantia, LocalDate dataVencimento,
