@@ -1,6 +1,6 @@
-package com.adsifpb.chargemanager.repository;
+package com.adsifpb.chargemanager.repository.cliente;
 
-import com.adsifpb.chargemanager.model.Cliente;
+import com.adsifpb.chargemanager.model.cliente.Cliente;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

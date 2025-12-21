@@ -1,7 +1,7 @@
-package com.adsifpb.chargemanager.controller;
+package com.adsifpb.chargemanager.controller.cobranca;
 
-import com.adsifpb.chargemanager.model.Cobranca;
-import com.adsifpb.chargemanager.service.CobrancaService;
+import com.adsifpb.chargemanager.model.cobranca.Cobranca;
+import com.adsifpb.chargemanager.service.cobranca.CobrancaEfetuarService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/cobranca")
-public class CobrancaController {
-    private final CobrancaService service;
+public class CobrancaEfetuarController {
+    private final CobrancaEfetuarService service;
 
-    public CobrancaController(CobrancaService cobrancaService) {
-        this.service = cobrancaService;
+    public CobrancaEfetuarController(CobrancaEfetuarService cobrancaEfetuarService) {
+        this.service = cobrancaEfetuarService;
     }
 
     @PostMapping

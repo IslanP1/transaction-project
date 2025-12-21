@@ -1,6 +1,6 @@
-package com.adsifpb.chargemanager.repository;
+package com.adsifpb.chargemanager.repository.cliente;
 
-import com.adsifpb.chargemanager.model.Cliente;
+import com.adsifpb.chargemanager.model.cliente.Cliente;
 
 // Se atentar aos principios SOLID -> Single Responsibility Principle
 // Se atentar aos principios de Clean Architecture -> Repositorio deve depender de Model e nao o contrario

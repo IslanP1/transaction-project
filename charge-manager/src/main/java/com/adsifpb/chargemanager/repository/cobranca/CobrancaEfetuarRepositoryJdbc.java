@@ -1,11 +1,11 @@
-package com.adsifpb.chargemanager.repository;
+package com.adsifpb.chargemanager.repository.cobranca;
 
-import com.adsifpb.chargemanager.model.Cobranca;
+import com.adsifpb.chargemanager.model.cobranca.Cobranca;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CobrancaEfetuarRepositoryJdbc implements CobrancaRepository {
+public class CobrancaEfetuarRepositoryJdbc implements CobrancaEfetuarRepository {
     private JdbcTemplate jdbcTemplate;
 
     public CobrancaEfetuarRepositoryJdbc(JdbcTemplate jdbcTemplate) {

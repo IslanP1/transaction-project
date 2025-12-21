@@ -1,9 +1,9 @@
-package com.adsifpb.chargemanager.controller;
+package com.adsifpb.chargemanager.controller.cliente;
 
-import com.adsifpb.chargemanager.model.Cliente;
+import com.adsifpb.chargemanager.model.cliente.Cliente;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.adsifpb.chargemanager.service.ClienteService;
+import com.adsifpb.chargemanager.service.cliente.ClienteService;
 
 @RestController
 @RequestMapping("/api/cliente")

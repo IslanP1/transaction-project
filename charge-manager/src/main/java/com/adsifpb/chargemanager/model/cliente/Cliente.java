@@ -1,4 +1,4 @@
-package com.adsifpb.chargemanager.model;
+package com.adsifpb.chargemanager.model.cliente;
 
 public class Cliente {
     private String nome;

@@ -1,9 +1,9 @@
-package com.adsifpb.chargemanager.service;
+package com.adsifpb.chargemanager.service.cliente;
 
-import com.adsifpb.chargemanager.model.Cliente;
+import com.adsifpb.chargemanager.model.cliente.Cliente;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.adsifpb.chargemanager.repository.ClienteRepository;
+import com.adsifpb.chargemanager.repository.cliente.ClienteRepository;
 
 @Service
 public class ClienteService {
