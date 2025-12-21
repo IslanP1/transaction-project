@@ -2,7 +2,7 @@ package com.adsifpb.chargemanager.service.email;
 
 
 import com.adsifpb.chargemanager.model.cliente.Cliente;
-import com.adsifpb.chargemanager.repository.cliente.ClienteSalvarRepository;
+import com.adsifpb.chargemanager.repository.cliente.ClienteBuscarRepository;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,17 +10,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
-    private final ClienteSalvarRepository clienteSalvarRepository;
-    private final Cliente cliente;
+    private final ClienteBuscarRepository clienteBuscarRepository;
 
-    public EmailServiceImpl(JavaMailSender mailSender, ClienteSalvarRepository clienteSalvarRepository, Cliente cliente) {
+    public EmailServiceImpl(JavaMailSender mailSender, ClienteBuscarRepository clienteBuscarRepository) {
         this.mailSender = mailSender;
-        this.clienteSalvarRepository = clienteSalvarRepository;
-        this.cliente = cliente;
+        this.clienteBuscarRepository = clienteBuscarRepository;
     }
 
     @Override
     public void enviarStatusCobrancaAlterado(Long cobrancaId, Long clienteId, Long statusId) {
+        // Busca o cliente pelo ID
+        Cliente cliente = clienteBuscarRepository.buscarCliente(clienteId);
+
+        if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+            // Log ou tratamento se necessário
+            return;
+        }
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(cliente.getEmail());

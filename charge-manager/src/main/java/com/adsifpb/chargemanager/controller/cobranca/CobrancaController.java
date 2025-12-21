@@ -1,17 +1,27 @@
 package com.adsifpb.chargemanager.controller.cobranca;
 
 import com.adsifpb.chargemanager.controller.cobranca.dto.AtualizarStatusCobrancaRequest;
+import com.adsifpb.chargemanager.model.cobranca.Cobranca;
+import com.adsifpb.chargemanager.service.cobranca.CobrancaEfetuarService;
 import com.adsifpb.chargemanager.service.cobranca.CobrancaStatusService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cobranca")
-public class CobrancaStatusController {
-    private final CobrancaStatusService service;
+public class CobrancaController {
+    private final CobrancaEfetuarService efetuarService;
+    private final CobrancaStatusService statusService;
 
-    public CobrancaStatusController(CobrancaStatusService service) {
-        this.service = service;
+    public CobrancaController(CobrancaEfetuarService efetuarService, CobrancaStatusService statusService) {
+        this.efetuarService = efetuarService;
+        this.statusService = statusService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Cobranca> criar(@RequestBody Cobranca cobranca) {
+        Cobranca cobrancaCriada = efetuarService.efetuar(cobranca);
+        return ResponseEntity.ok(cobrancaCriada);
     }
 
     @PatchMapping("/status/{cobrancaId}")
@@ -20,7 +30,7 @@ public class CobrancaStatusController {
             @RequestParam Long clienteId,
             @RequestBody AtualizarStatusCobrancaRequest request
     ) {
-        service.atualizarStatus(
+        statusService.atualizarStatus(
                 cobrancaId,
                 clienteId,
                 request.getStatusId()
@@ -28,5 +38,5 @@ public class CobrancaStatusController {
 
         return ResponseEntity.noContent().build();
     }
-
 }
+

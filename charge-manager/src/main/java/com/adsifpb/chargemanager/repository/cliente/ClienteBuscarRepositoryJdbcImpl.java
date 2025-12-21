@@ -4,20 +4,19 @@ import com.adsifpb.chargemanager.model.cliente.Cliente;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
-public class ClienteBuscarRepositoryJdbcImpl implements ClienteBuscarRepository{
+public class ClienteBuscarRepositoryJdbcImpl implements ClienteBuscarRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Cliente> clienteRowMapper;
 
-    public ClienteBuscarRepositoryJdbcImpl(JdbcTemplate jdbcTemplate, RowMapper<Cliente> clienteRowMapper) {
+    public ClienteBuscarRepositoryJdbcImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.clienteRowMapper = clienteRowMapper;
+        this.clienteRowMapper = new ClienteRowMapper();
     }
 
     @Override
