@@ -9,11 +9,11 @@ public class Cobranca {
     private Integer statusId;
     private Integer metodoPagamentoId;
     private Integer clienteId;
-    
+
     public Cobranca() {}
 
     public Cobranca(String descricao, Double quantia, LocalDate dataVencimento,
-                    Integer statusId, Integer metodoPagamentoId) {
+                    Integer statusId, Integer metodoPagamentoId, Integer clienteId) {
         this.descricao = descricao;
         this.quantia = quantia;
         this.dataVencimento = dataVencimento;

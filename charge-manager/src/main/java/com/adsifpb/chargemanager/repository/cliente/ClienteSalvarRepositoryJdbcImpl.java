@@ -5,11 +5,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ClienteSalvarRepositoryJdbc implements ClienteRepository {
+public class ClienteSalvarRepositoryJdbcImpl implements ClienteSalvarRepository {
 
     private JdbcTemplate jdbcTemplate;
 
-    public ClienteSalvarRepositoryJdbc(JdbcTemplate jdbcTemplate) {
+    public ClienteSalvarRepositoryJdbcImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -27,7 +27,6 @@ public class ClienteSalvarRepositoryJdbc implements ClienteRepository {
                 cliente.getEmail(),
                 cliente.getTelefone()
         );
-
         return cliente;
     }
 }
