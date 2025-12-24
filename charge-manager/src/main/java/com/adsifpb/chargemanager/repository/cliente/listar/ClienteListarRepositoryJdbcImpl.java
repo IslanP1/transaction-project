@@ -1,4 +1,4 @@
-package com.adsifpb.chargemanager.repository.cliente;
+package com.adsifpb.chargemanager.repository.cliente.listar;
 
 import com.adsifpb.chargemanager.model.cliente.Cliente;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,39 +8,31 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
-public class ClienteBuscarRepositoryJdbcImpl implements ClienteBuscarRepository {
+public class ClienteListarRepositoryJdbcImpl implements ClienteListarRepository{
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Cliente> clienteRowMapper;
+    private RowMapper<Cliente> clienteRowMapper;
 
-    public ClienteBuscarRepositoryJdbcImpl(JdbcTemplate jdbcTemplate) {
+    public ClienteListarRepositoryJdbcImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.clienteRowMapper = new ClienteRowMapper();
     }
 
     @Override
-    public Cliente buscarCliente(Long clienteId) {
+    public List<Cliente> listarClientes() {
         String sql = """
             SELECT id, name, email, phone
             FROM tb_client
-            WHERE id = ?
         """;
-
         try {
-            return jdbcTemplate.queryForObject(
-                    sql,
-                    clienteRowMapper,
-                    clienteId
-            );
+            return jdbcTemplate.query(sql, clienteRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException("Cliente não encontrado com id: " + clienteId);
+            throw new RuntimeException("Nenhum cliente encontrado");
         }
     }
 
-    /**
-     * Classe responsável APENAS por mapear ResultSet -> Cliente
-     */
     private static class ClienteRowMapper implements RowMapper<Cliente> {
         @Override
         public Cliente mapRow(ResultSet rs, int rowNum) throws SQLException {

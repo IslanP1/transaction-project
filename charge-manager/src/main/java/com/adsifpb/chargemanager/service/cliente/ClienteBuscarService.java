@@ -1,7 +1,7 @@
 package com.adsifpb.chargemanager.service.cliente;
 
 import com.adsifpb.chargemanager.model.cliente.Cliente;
-import com.adsifpb.chargemanager.repository.cliente.ClienteBuscarRepository;
+import com.adsifpb.chargemanager.repository.cliente.buscar.ClienteBuscarRepository;
 import org.springframework.stereotype.Service;
 
 @Service

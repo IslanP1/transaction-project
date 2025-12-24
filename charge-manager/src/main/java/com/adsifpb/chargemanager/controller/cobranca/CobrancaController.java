@@ -24,7 +24,7 @@ public class CobrancaController {
         return ResponseEntity.ok(cobrancaCriada);
     }
 
-    @PatchMapping("/status/{cobrancaId}")
+    @PatchMapping("/{cobrancaId}")
     public ResponseEntity<Void> atualizarStatus(
             @PathVariable Long cobrancaId,
             @RequestParam Long clienteId,

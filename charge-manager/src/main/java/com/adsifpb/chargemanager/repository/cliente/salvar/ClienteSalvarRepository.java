@@ -1,4 +1,4 @@
-package com.adsifpb.chargemanager.repository.cliente;
+package com.adsifpb.chargemanager.repository.cliente.salvar;
 
 import com.adsifpb.chargemanager.model.cliente.Cliente;
 
