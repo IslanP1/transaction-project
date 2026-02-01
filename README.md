@@ -273,6 +273,51 @@ docker stack rm transaction-app
 docker swarm leave --force
 ```
 
+## 🔧 Troubleshooting
+
+### Erro: "No compiler is provided in this environment"
+Este erro indica que você está usando JRE em vez de JDK. 
+
+**Solução:**
+```bash
+# Windows - Verificar JAVA_HOME
+echo %JAVA_HOME%
+
+# Deve apontar para um JDK, não JRE
+# Exemplo: C:\Program Files\Java\jdk-17
+
+# Configurar JAVA_HOME (Windows)
+setx JAVA_HOME "C:\Program Files\Java\jdk-17"
+```
+
+### Erro: "MalformedInputException" no application.properties
+Este erro ocorre por caracteres especiais com encoding incorreto.
+
+**Solução:** Use apenas caracteres ASCII nos arquivos .properties (evite acentos).
+
+### Docker não inicia
+```bash
+# Verificar se Docker está rodando
+docker info
+
+# Inicializar Docker Swarm (se necessário)
+docker swarm init
+
+# Se houver erro de rede, reiniciar Docker
+docker network prune -f
+```
+
+### Portas já em uso
+```bash
+# Windows - Ver processos usando as portas
+netstat -ano | findstr :8080
+netstat -ano | findstr :8081
+netstat -ano | findstr :5432
+
+# Matar processo pelo PID
+taskkill /PID <PID> /F
+```
+
 ## 📝 Variáveis de Ambiente
 
 | Variável | Descrição | Padrão |
@@ -295,7 +340,7 @@ docker swarm leave --force
 
 ## 👥 Equipe
 
-- **ADSIFPB** - Instituto Federal da Paraíba
+- Thamires Antunes e Islan Oliveira
 
 ## 📄 Licença
 
