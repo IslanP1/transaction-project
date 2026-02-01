@@ -1,4 +1,4 @@
-onadnpackage com.adsifpb.charge_proxy.dto.asaas;
+package com.adsifpb.charge_proxy.dto.asaas;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
