@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=transaction_db
+    ports:
+      - "5432:5432"
+    networks:
+      - transaction-net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+  charge-manager:
+    image: charge-manager:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transaction_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+      # URL do Charge Proxy via SOAP
+      CHARGE_PROXY_SOAP_URL: http://charge-proxy:8082/ws/cobranca
+    ports:
+      - "8080:8080"
+    networks:
+      - transaction-net
+    depends_on:
+      - postgres
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+
+  charge-proxy:
+    image: charge-proxy:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      ASAAS_API_KEY: ${ASAAS_API_KEY:-sua_api_key_aqui}
+      ASAAS_WEBHOOK_TOKEN: ${ASAAS_WEBHOOK_TOKEN:-}
+      CHARGE_MANAGER_URL: http://charge-manager:8080
+    ports:
+      # Porta REST para webhooks e APIs
+      - "8081:8081"
+      # Porta SOAP para comunicação com Charge Manager
+      - "8082:8082"
+    networks:
+      - transaction-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+networks:
+  transaction-net:
+    driver: overlay
+    attachable: true
+
+volumes:
+  postgres_data:
