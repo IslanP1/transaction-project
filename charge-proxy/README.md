@@ -7,21 +7,67 @@ O **Charge Proxy** é o módulo responsável pela comunicação direta com o gat
 ## 🏗️ Arquitetura
 
 ```
-┌─────────────────┐    HTTP/REST    ┌──────────────┐    HTTPS     ┌───────────────┐
-│  Charge Manager │ ◄──────────────► │ Charge Proxy │ ◄──────────► │ ASAAS Gateway │
-└─────────────────┘                  └──────────────┘              └───────────────┘
-                                           │
-                                           │ Webhook
-                                           ▼
-                                    ┌──────────────┐
-                                    │ ASAAS Webhook│
+┌─────────────────┐   SOAP/JAX-WS   ┌──────────────┐    HTTPS     ┌───────────────┐
+│  Charge Manager │ ──────────────► │ Charge Proxy │ ◄──────────► │ ASAAS Gateway │
+└─────────────────┘    (8082)       └──────────────┘              └───────────────┘
+         ▲                                │
+         │                                │ Webhook (REST)
+         │ Observer Pattern               ▼
+         │ (notification by event)  ┌──────────────┐
+         └───────────────────────── │ ASAAS Webhook│
                                     │  (notifica)  │
                                     └──────────────┘
 ```
 
+### Protocolos de Comunicação
+
+| Direção | Protocolo | Porta | Descrição |
+|---------|-----------|-------|-----------|
+| Manager → Proxy | SOAP/RPC (JAX-WS) | 8082 | Criar/Cancelar/Buscar cobranças |
+| ASAAS → Proxy | REST (Webhook) | 8081 | Notificações de status |
+| Proxy → Manager | REST | 8080 | Atualização de status via Observer |
+| Proxy → ASAAS | REST (OpenFeign) | HTTPS | Integração com API ASAAS |
+
 ## 🚀 Funcionalidades
 
-### Endpoints Disponíveis
+### SOAP Endpoints (JAX-WS) - Porta 8082
+
+O Charge Manager comunica-se com o Charge Proxy via protocolo SOAP-RPC.
+
+**WSDL:** `http://localhost:8082/ws/cobranca?wsdl`
+
+#### Operações Disponíveis:
+
+| Operação | Descrição |
+|----------|-----------|
+| `criarCobranca` | Cria uma nova cobrança no ASAAS |
+| `cancelarCobranca` | Cancela uma cobrança existente |
+| `buscarCobranca` | Busca informações de uma cobrança |
+
+#### Exemplo de Request SOAP:
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                  xmlns:soap="http://soap.charge_proxy.adsifpb.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:criarCobranca>
+         <cobrancaRequest>
+            <cobrancaId>1</cobrancaId>
+            <clienteId>1</clienteId>
+            <clienteNome>João Silva</clienteNome>
+            <clienteCpfCnpj>12345678901</clienteCpfCnpj>
+            <clienteEmail>joao@email.com</clienteEmail>
+            <descricao>Mensalidade Janeiro</descricao>
+            <valor>150.00</valor>
+            <dataVencimento>2024-02-15</dataVencimento>
+            <tipoPagamento>PIX</tipoPagamento>
+         </cobrancaRequest>
+      </soap:criarCobranca>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+### REST Endpoints - Porta 8081
 
 #### 1. Criar Cobrança
 ```http
@@ -150,13 +196,17 @@ Acesse: https://sandbox.asaas.com/
 ## 🛠️ Tecnologias
 
 - **Spring Boot 3.2**
-- **Spring Cloud OpenFeign** - Cliente HTTP declarativo
+- **Spring Cloud OpenFeign** - Cliente HTTP declarativo para ASAAS
+- **JAX-WS / SOAP** - Comunicação RPC com Charge Manager
+- **Jakarta XML Web Services** - Implementação SOAP
 - **Java 17**
+- **Docker / Docker Swarm** - Containerização e orquestração
 
 ## 📁 Estrutura do Projeto
 
 ```
 charge-proxy/
+├── Dockerfile
 ├── src/main/java/com/adsifpb/charge_proxy/
 │   ├── ChargeProxyApplication.java
 │   ├── ProxyController.java
@@ -165,8 +215,16 @@ charge-proxy/
 │   │   ├── AsaasFeignConfig.java    # Configuração do Feign
 │   │   └── ChargeManagerClient.java # Feign client para notificar Manager
 │   ├── controller/
-│   │   ├── CobrancaProxyController.java # Endpoints de cobrança
-│   │   └── WebhookController.java       # Endpoint de webhook
+│   │   ├── CobrancaProxyController.java # Endpoints REST de cobrança
+│   │   └── WebhookController.java       # Endpoint de webhook ASAAS
+│   ├── soap/                            # Implementação JAX-WS
+│   │   ├── CobrancaSoapService.java     # Interface SOAP
+│   │   ├── CobrancaSoapServiceImpl.java # Implementação SOAP
+│   │   ├── config/
+│   │   │   └── SoapConfig.java          # Configuração endpoint SOAP
+│   │   └── dto/
+│   │       ├── CobrancaSoapRequest.java
+│   │       └── CobrancaSoapResponse.java
 │   ├── dto/
 │   │   ├── CriarCobrancaRequest.java
 │   │   ├── CriarCobrancaResponse.java
@@ -182,7 +240,8 @@ charge-proxy/
 │       ├── AsaasService.java    # Lógica de integração com ASAAS
 │       └── WebhookService.java  # Processa webhooks e notifica Manager
 └── src/main/resources/
-    └── application.properties
+    ├── application.properties
+    └── application-docker.properties
 ```
 
 ## 🧪 Testar Localmente
@@ -214,18 +273,40 @@ curl -X POST http://localhost:8081/api/cobranca \
   }'
 ```
 
-## 🐳 Docker
+## 🐳 Docker Swarm
 
-O serviço roda na porta **8081** no Docker Swarm.
+O serviço roda nas portas **8081** (REST) e **8082** (SOAP) no Docker Swarm.
 
+### Construir a imagem
+```bash
+cd charge-proxy
+mvn clean package -DskipTests
+docker build -t charge-proxy:latest .
+```
+
+### Executar via Docker Swarm
+```bash
+docker stack deploy -c docker/docker-stack.yml transaction-app
+```
+
+### Configuração no docker-stack.yml
 ```yaml
 charge-proxy:
   image: charge-proxy:latest
   ports:
-    - "8081:8081"
+    - "8081:8081"  # REST (webhooks)
+    - "8082:8082"  # SOAP (JAX-WS)
   environment:
+    - SPRING_PROFILES_ACTIVE=docker
     - ASAAS_API_KEY=sua_api_key
-    - charge-manager.api.url=http://charge-manager:8080
+    - ASAAS_WEBHOOK_TOKEN=seu_token_webhook
+    - CHARGE_MANAGER_URL=http://charge-manager:8080
+  deploy:
+    replicas: 1
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 512M
 ```
 
 ## 📝 Notas
