@@ -4,14 +4,15 @@ import com.adsifpb.charge_proxy.dto.asaas.AsaasWebhookEvent;
 import com.adsifpb.charge_proxy.service.WebhookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller para receber webhooks do ASAAS
  * O ASAAS envia notificações quando o status de uma cobrança muda
- * Documentação dos webhooks do ASAAS:
- * https://sandbox.asaas.com/ -> Configurações -> Integrações -> Webhooks
+ * Configuração do webhook no ASAAS:
  * URL: http://dominio:8081/api/webhook/asaas
  */
 @RestController
@@ -21,6 +22,9 @@ public class WebhookController {
     private static final Logger logger = LoggerFactory.getLogger(WebhookController.class);
 
     private final WebhookService webhookService;
+
+    @Value("${asaas.webhook.token:}")
+    private String webhookToken;
 
     public WebhookController(WebhookService webhookService) {
         this.webhookService = webhookService;
@@ -45,10 +49,11 @@ public class WebhookController {
     ) {
         logger.info("Webhook recebido do ASAAS. Evento: {}", webhookEvent.getEvent());
 
-        // TODO: Validar o access token do webhook para segurança
-        // if (!validarAccessToken(accessToken)) {
-        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
-        // }
+        // Valida o access token do webhook para segurança
+        if (!validarAccessToken(accessToken)) {
+            logger.warn("Token de webhook inválido ou ausente");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+        }
 
         try {
             webhookService.processarWebhook(webhookEvent);
@@ -59,6 +64,25 @@ public class WebhookController {
             // O erro é logado para análise posterior
             return ResponseEntity.ok("Webhook recebido (com erro no processamento)");
         }
+    }
+
+    /**
+     * Valida o token de segurança do webhook
+     * Se o token não estiver configurado, aceita todas as requisições
+     */
+    private boolean validarAccessToken(String accessToken) {
+        // Se não há token configurado, aceita qualquer requisição (desenvolvimento)
+        if (webhookToken == null || webhookToken.isEmpty()) {
+            logger.debug("Token de webhook não configurado, aceitando requisição");
+            return true;
+        }
+
+        // Valida o token recebido
+        if (accessToken == null || accessToken.isEmpty()) {
+            return false;
+        }
+
+        return webhookToken.equals(accessToken);
     }
 
     /**
